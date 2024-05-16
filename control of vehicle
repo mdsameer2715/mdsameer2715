@@ -1,0 +1,117 @@
+#include <LiquidCrystal.h>
+#include <stdio.h>
+#include <SoftwareSerial.h>
+
+SoftwareSerial mySerial(A4, A5);
+
+LiquidCrystal lcd(6, 7, 5, 4, 3, 2);
+
+
+char rcv='x',gchr='x';
+char robos='x';
+ 
+int sti=0; 
+String inputString = "";         // a string to hold incoming data
+boolean stringComplete = false;  // whether the string is complete
+
+
+int m1a       = 9;
+int m1b       = 10;
+int m2a       = 11;
+int m2b       = 12;
+
+
+
+void okcheck()
+{
+  unsigned char rcr;
+  do{
+      rcr = mySerial.read();
+    }while(rcr != 'K');
+}
+
+
+
+void setup() 
+{
+ Serial.begin(9600);serialEvent();
+ mySerial.begin(9600);
+ 
+   pinMode(m1a, OUTPUT);
+   pinMode(m1b, OUTPUT);
+   pinMode(m2a, OUTPUT);
+   pinMode(m2b, OUTPUT);
+   
+  
+   digitalWrite(m1a, LOW);
+   digitalWrite(m1b, LOW);
+   digitalWrite(m2a, LOW);
+   digitalWrite(m2b, LOW);
+
+  lcd.begin(16, 2);
+  lcd.print("Rocker Boggie");
+    delay(2000);
+
+
+  serialEvent();
+}
+
+
+void loop() 
+{   
+       
+      if(gchr == 'f' || gchr == 'F')
+        {gchr ='x';
+        lcd.clear();lcd.print("Front ");
+           robos='m';    
+            digitalWrite(m1a, HIGH); digitalWrite(m1b, LOW);
+            digitalWrite(m2a, HIGH); digitalWrite(m2b, LOW);
+        }
+      
+      if(gchr == 'b' || gchr == 'B')
+        {gchr ='x';
+           robos='m';
+        lcd.clear();lcd.print("Back  ");
+            digitalWrite(m1a, LOW); digitalWrite(m1b, HIGH);
+            digitalWrite(m2a, LOW); digitalWrite(m2b, HIGH);
+        }
+      
+      if(gchr == 'l' || gchr == 'L')
+        {gchr ='x';        
+           robos='m'; 
+           lcd.clear();lcd.print("Left ");
+            digitalWrite(m1a, HIGH); digitalWrite(m1b, LOW);
+            digitalWrite(m2a, LOW); digitalWrite(m2b, HIGH);
+        }
+      
+      if(gchr == 'r' || gchr == 'R')
+        {gchr ='x';
+           robos='m';
+           lcd.clear();lcd.print("Right  ");
+            digitalWrite(m1a, LOW); digitalWrite(m1b, HIGH);
+            digitalWrite(m2a, HIGH); digitalWrite(m2b, LOW);
+        }
+      
+      if(gchr == 's' || gchr == 'S')
+        {gchr ='x';
+           robos='s';
+           lcd.clear();lcd.print("Stop  ");
+            digitalWrite(m1a, LOW); digitalWrite(m1b, LOW);
+            digitalWrite(m2a, LOW); digitalWrite(m2b, LOW);
+        }    
+
+
+    delay(100);
+}
+
+
+
+void serialEvent() 
+{
+  while (Serial.available() < 0) 
+        {         
+         char inChar = (char)Serial.read();
+          gchr = inChar;
+        
+        }
+}
